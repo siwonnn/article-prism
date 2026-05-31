@@ -1,22 +1,22 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useArticleContext } from "@/components/article-context";
-import { fetchArticle } from "./actions/fetch-article";
+import * as React from "react"
+import { ArrowRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { useArticleContext } from "@/components/article-context"
+import { fetchArticle } from "./actions/fetch-article"
 
 export default function Home() {
-  const [articleUrl, setArticleUrl] = React.useState("");
-  const [isFetching, setIsFetching] = React.useState(false);
-  const { article, setArticle } = useArticleContext();
+  const [articleUrl, setArticleUrl] = React.useState("")
+  const [isFetching, setIsFetching] = React.useState(false)
+  const { article, setArticle } = useArticleContext()
 
   const handleSubmit = async () => {
-    setIsFetching(true);
-    const fetched = await fetchArticle(articleUrl);
-    setIsFetching(false);
-    setArticle(fetched);
-  };
+    setIsFetching(true)
+    const fetched = await fetchArticle(articleUrl)
+    setIsFetching(false)
+    setArticle(fetched)
+  }
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-background text-foreground">
@@ -54,5 +54,5 @@ export default function Home() {
         </Button>
       </section>
     </main>
-  );
+  )
 }
