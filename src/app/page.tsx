@@ -5,17 +5,21 @@ import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useArticleContext } from "@/components/article-context"
 import { fetchArticle } from "./actions/fetch-article"
+import { useRouter } from "next/navigation"
 
 export default function Home() {
   const [articleUrl, setArticleUrl] = React.useState("")
   const [isFetching, setIsFetching] = React.useState(false)
   const { article, setArticle } = useArticleContext()
 
+  const router = useRouter()
+
   const handleSubmit = async () => {
     setIsFetching(true)
     const fetched = await fetchArticle(articleUrl)
     setIsFetching(false)
     setArticle(fetched)
+    router.push('/article')
   }
 
   return (
