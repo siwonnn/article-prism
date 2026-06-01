@@ -8,13 +8,12 @@ export async function generate(prompt: string): Promise<string> {
 
   const response = await client.chat.send({
     chatRequest: {
-      model: "qwen/qwen3-32b",
+      model: "~google/gemini-pro-latest",
       messages: [
         { role: "user", content: prompt }
       ],
       stream: false,
     },
   })
-
   return response.choices[0].message.content
 }

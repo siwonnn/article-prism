@@ -20,7 +20,7 @@ export default function ArticlePage() {
 
   return (
     <main className="min-h-screen bg-background px-6 py-8 text-foreground sm:px-8 lg:px-10">
-      <section className="mx-auto flex w-full max-w-6xl flex-col gap-8">
+      <section className="mx-auto flex w-full flex-col gap-8">
         <div className="flex justify-start">
           <Button asChild variant="ghost" className="gap-2 rounded-full px-3">
             <Link href="/">
@@ -33,24 +33,24 @@ export default function ArticlePage() {
         <Card className="border border-border/60 bg-card/80 shadow-none">
           <CardHeader className="border-b border-border/60 pb-5">
             <CardDescription>Article Overview</CardDescription>
-            <CardTitle className="text-3xl sm:text-4xl">
+            <CardTitle className="text-3xl sm:text-4xl font-serif font-black">
               {article?.title}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue={Object.keys(tabComponents)[0]} className="flex w-full flex-col gap-6">
-              <TabsList className="w-full flex-wrap justify-start gap-2 rounded-3xl bg-muted p-2">
-                {Object.keys(tabComponents).map((tab) => (
-                  <TabsTrigger key={tab} value={tab}>{tab}</TabsTrigger>
-                ))}
-              </TabsList>
-              
-              {Object.entries(tabComponents).map(([tab, component]) => (
-                <TabsContent key={tab} value={tab}>
-                  {component}
-                </TabsContent>
+          <Tabs defaultValue={Object.keys(tabComponents)[0]} className="flex w-full flex-col gap-6">
+            <TabsList className="w-full flex-wrap justify-start gap-2 rounded-3xl bg-muted p-2">
+              {Object.keys(tabComponents).map((tab) => (
+                <TabsTrigger key={tab} value={tab}>{tab}</TabsTrigger>
               ))}
-            </Tabs>
+            </TabsList>
+            
+            {Object.entries(tabComponents).map(([tab, component]) => (
+              <TabsContent key={tab} value={tab}>
+                {component}
+              </TabsContent>
+            ))}
+          </Tabs>
           </CardContent>
         </Card>
       </section>

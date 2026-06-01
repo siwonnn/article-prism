@@ -9,9 +9,9 @@ export default function OriginalArticleTab() {
   return (
     <div className="min-h-[18rem] rounded-3xl border border-dashed border-border/70 bg-muted/30 p-6">
       <div className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-        content
+        original article
       </div>
-      <div className="whitespace-pre-wrap leading-6 text-muted-foreground prose prose-invert">
+      <div className="whitespace-pre-wrap leading-6 font-serif font-medium text-[17px] prose prose-invert">
         <ReactMarkdown>{article?.content}</ReactMarkdown>
       </div>
     </div>
