@@ -42,6 +42,5 @@ export async function fetchArticle(articleUrl: string): Promise<Article> {
     content: parsed.content,
     url: articleUrl
   }
-  console.log(article)
   return article
 }
