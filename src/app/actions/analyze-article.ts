@@ -5,7 +5,7 @@ import { generate } from "@/lib/ai"
 
 export type AnalysisResult = {
   main_claim: string
-  evidence: {
+  evidences: {
     claim: string
     support: string
     strength: "strong" | "weak" | "unsupported"
@@ -45,7 +45,7 @@ Return ONLY valid JSON, no markdown, no preamble.
 {
   "main_claim": "One sentence: the core argument the article is making",
   
-  "evidence": [
+  "evidences": [
     {
       "claim": "A specific claim made in the article",
       "support": "What evidence the author provides for it",

@@ -30,7 +30,8 @@ export default function ArticlePage() {
           </Button>
         </div>
 
-        <Card className="border border-border/60 bg-card/80 shadow-none">
+        <div className="flex flex-col gap-6 w-full">
+          <Card className="border border-border/60 bg-card/80 shadow-none">
           <CardHeader className="border-b border-border/60 pb-5">
             <CardDescription>Article Overview</CardDescription>
             <CardTitle className="text-3xl sm:text-4xl font-serif font-black">
@@ -52,7 +53,8 @@ export default function ArticlePage() {
             ))}
           </Tabs>
           </CardContent>
-        </Card>
+          </Card>
+        </div>
       </section>
     </main>
   )
