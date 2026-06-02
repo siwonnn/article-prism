@@ -57,10 +57,21 @@ export default function AnalysisTab() {
           <div className="flex flex-col gap-4">
             <Card className="bg-muted/30">
               <CardHeader>
-                <CardTitle className="font-bold text-lg">Main Claim</CardTitle>
+                <CardTitle className="font-bold text-lg">Overview</CardTitle>
               </CardHeader>
               <CardContent className="text-base">
-                {analysisResult.main_claim}
+                <div className="mt-3">
+                  <div className="font-semibold text-foreground">Main Claim</div>
+                  <div className="mt-2 text-muted-foreground">{analysisResult.main_claim}</div>
+                </div>
+                <div className="mt-3">
+                  <div className="font-semibold text-foreground">Tone</div>
+                  <div className="mt-2 text-muted-foreground">{analysisResult.tone}</div>
+                </div>
+                <div className="mt-3">
+                  <div className="font-semibold text-foreground">Verdict</div>
+                  <div className="mt-2 text-muted-foreground">{analysisResult.one_line_verdict}</div>
+                </div>
               </CardContent>
             </Card>
 
@@ -130,6 +141,43 @@ export default function AnalysisTab() {
                       </div>
                     )
                   )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-muted/30">
+              <CardHeader>
+                <CardTitle className="font-bold text-lg">Logical Structure</CardTitle>
+              </CardHeader>
+              <CardContent className="text-base">
+                <div className="font-semibold text-foreground">Summary</div>
+                <div className="mt-2 text-muted-foreground">{analysisResult.logical_structure.summary}</div>
+                <div className="mt-3">
+                  <div className="font-semibold text-foreground">Flaws</div>
+                  <ul className="list-disc list-inside">
+                    {analysisResult.logical_structure.flaws.map((flaw, index) => (
+                      <li key={index} className="mt-2 text-muted-foreground">
+                        {flaw}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-muted/30">
+              <CardHeader>
+                <CardTitle className="font-bold text-lg">Framing</CardTitle>
+              </CardHeader>
+              <CardContent className="text-base">
+                <div className="font-semibold text-foreground">{analysisResult.framing.angle}</div>
+                <div className="mt-3">
+                  <div className="font-semibold text-foreground">Emphasizes:</div>
+                  <div className="mt-2 text-muted-foreground">{analysisResult.framing.emphasizes}</div>
+                </div>
+                <div className="mt-3">
+                  <div className="font-semibold text-foreground">Obscures:</div>
+                  <div className="mt-2 text-muted-foreground">{analysisResult.framing.obscures}</div>
                 </div>
               </CardContent>
             </Card>
