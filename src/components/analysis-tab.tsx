@@ -5,6 +5,7 @@ import { useArticleContext } from "@/components/article-context"
 import { type AnalysisResult, analyzeArticle } from "@/app/actions/analyze-article"
 import OriginalArticleTab from "./original-article-tab"
 import { Card, CardTitle, CardContent, CardHeader } from "@/components/ui/card"
+import { type UIHighlight } from "@/lib/types"
 
 export default function AnalysisTab() {
   const { article } = useArticleContext()
@@ -42,10 +43,34 @@ export default function AnalysisTab() {
     void runAnalysis()
   }, [article?.url, article?.content])
 
+  const highlights = React.useMemo((): UIHighlight[] => {
+    const out: UIHighlight[] = []
+
+    analysisResult?.evidences.forEach((evidence) => {
+      evidence.excerpts.forEach((text) => {
+        out.push({
+          text: text,
+          colorClass: "bg-amber-200/60 ring-amber-300"
+        })
+      })
+    })
+
+    analysisResult?.rhetorical_moves.forEach((move) => {
+      move.excerpts.forEach((text) => {
+        out.push({
+          text: text,
+          colorClass: "bg-violet-200/60 ring-violet-300"
+        })
+      })
+    })
+
+    return out
+  }, [analysisResult])
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div className="md:col-span-1">
-        <OriginalArticleTab />
+        <OriginalArticleTab highlights={highlights} />
       </div>
 
       <div className="md:col-span-1 flex flex-col gap-4">
@@ -181,9 +206,33 @@ export default function AnalysisTab() {
                 </div>
               </CardContent>
             </Card>
+
+            <Card className="bg-muted/30">
+              <CardHeader>
+                <CardTitle className="font-bold text-lg">Rhetorical Moves</CardTitle>
+              </CardHeader>
+              <CardContent className="text-base">
+                <div className="flex flex-col gap-3">
+                  {analysisResult.rhetorical_moves.map((move, index) => (
+                      <div 
+                        key={index}
+                        className="rounded-2xl border border-slate-200/80 bg-slate-50/90 p-4 ring-1 ring-inset ring-slate-200/60"
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1">
+                            <div className="text-sm font-semibold text-foreground">{move.move}</div>
+                            <div className="mt-2 text-sm text-muted-foreground">{move.effect}</div>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         ) : (
-          <div className="text-muted-foreground">Select an article to start the analysis.</div>
+          <div className="t ext-muted-foreground">Select an article to start the analysis.</div>
         )}
       </div>
     </div>

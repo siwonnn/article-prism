@@ -3,3 +3,8 @@ export type Article = {
     content: string
     url: string
 }
+
+export type UIHighlight = {
+  text: string
+  colorClass: string
+}

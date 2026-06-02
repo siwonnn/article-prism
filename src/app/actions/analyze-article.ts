@@ -8,6 +8,7 @@ export type AnalysisResult = {
   evidences: {
     claim: string
     support: string
+    excerpts: string[]
     strength: "strong" | "weak" | "unsupported"
   }[]
   assumptions: {
@@ -25,7 +26,7 @@ export type AnalysisResult = {
   }
   rhetorical_moves: {
     move: string
-    example: string
+    excerpts: string[]
     effect: string
   }[]
   missing: {
@@ -49,6 +50,7 @@ Return ONLY valid JSON, no markdown, no preamble.
     {
       "claim": "A specific claim made in the article",
       "support": "What evidence the author provides for it",
+      "excerpts": ["Exact phrase or sentences from the article that makes this claim"],
       "strength": "strong | weak | unsupported"
     }
   ],
@@ -74,7 +76,7 @@ Return ONLY valid JSON, no markdown, no preamble.
   "rhetorical_moves": [
     {
       "move": "Name of the technique",
-      "example": "Specific quote or instance from the article",
+      "excerpts": ["Specific quote or instance from the article"],
       "effect": "What this does to the reader"
     }
   ],
