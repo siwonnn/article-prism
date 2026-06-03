@@ -37,7 +37,7 @@ export async function generateVocabHelp(text: string): Promise<UIHighlight[]> {
   cleaned.vocabularies.forEach((vocab) => {
     output.push({
       text: vocab.vocab,
-      colorClass: "bg-violet-200/60 ring-violet-300",
+      colorClass: "bg-sky-200/60 text-sky-800 ring-sky-300",
       explanation: vocab.meaning
     })
   })

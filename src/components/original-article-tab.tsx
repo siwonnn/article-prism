@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { type UIHighlight } from "@/lib/types"
 import { generateVocabHelp } from "@/app/actions/vocab-help"
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
 
 type OriginalArticleTabProps = {
   highlights?: UIHighlight[]
@@ -49,12 +50,21 @@ export default function OriginalArticleTab({
         parts.push(text.slice(cursor, m.start))
       }
       parts.push(
-        <mark
-          key={`${m.start}-${m.end}`}
-          className={`${m.hl.colorClass} rounded px-1 ring-1 ring-inset`}
-        >
-          {text.slice(m.start, m.end)}
-        </mark>
+        <span key={`${m.start}-${m.end}`} className="relative inline-block group">
+          <Tooltip>
+            <TooltipTrigger>
+              <mark
+                className={`${m.hl.colorClass} rounded px-1 ring-1 ring-inset`}
+              >
+                {text.slice(m.start, m.end)}
+              </mark>
+            </TooltipTrigger>
+
+            {m.hl.explanation && (
+              <TooltipContent>{m.hl.explanation}</TooltipContent>
+            )}
+          </Tooltip>
+        </span>
       )
       cursor = m.end
     })
@@ -112,25 +122,27 @@ export default function OriginalArticleTab({
         </CardTitle>
       </CardHeader>
       <CardContent className="whitespace-pre-wrap leading-6 font-serif font-medium text-[17px]">
-        <ReactMarkdown
-          components={{
-            p: ({ children }) => <p>{renderHighlightedChildren(children)}</p>,
-            li: ({ children }) => <li>{renderHighlightedChildren(children)}</li>,
-            blockquote: ({ children }) => <blockquote>{renderHighlightedChildren(children)}</blockquote>,
-            strong: ({ children }) => <strong>{renderHighlightedChildren(children)}</strong>,
-            em: ({ children }) => <em>{renderHighlightedChildren(children)}</em>,
-            code: ({ children }) => <code>{renderHighlightedChildren(children)}</code>,
-            a: ({ children, href }) => <a href={href}>{renderHighlightedChildren(children)}</a>,
-            h1: ({ children }) => <h1>{renderHighlightedChildren(children)}</h1>,
-            h2: ({ children }) => <h2>{renderHighlightedChildren(children)}</h2>,
-            h3: ({ children }) => <h3>{renderHighlightedChildren(children)}</h3>,
-            h4: ({ children }) => <h4>{renderHighlightedChildren(children)}</h4>,
-            h5: ({ children }) => <h5>{renderHighlightedChildren(children)}</h5>,
-            h6: ({ children }) => <h6>{renderHighlightedChildren(children)}</h6>,
-          }}
-        >
-          {article?.content ?? ""}
-        </ReactMarkdown>
+        <TooltipProvider>
+          <ReactMarkdown
+            components={{
+              p: ({ children }) => <p>{renderHighlightedChildren(children)}</p>,
+              li: ({ children }) => <li>{renderHighlightedChildren(children)}</li>,
+              blockquote: ({ children }) => <blockquote>{renderHighlightedChildren(children)}</blockquote>,
+              strong: ({ children }) => <strong>{renderHighlightedChildren(children)}</strong>,
+              em: ({ children }) => <em>{renderHighlightedChildren(children)}</em>,
+              code: ({ children }) => <code>{renderHighlightedChildren(children)}</code>,
+              a: ({ children, href }) => <a href={href}>{renderHighlightedChildren(children)}</a>,
+              h1: ({ children }) => <h1>{renderHighlightedChildren(children)}</h1>,
+              h2: ({ children }) => <h2>{renderHighlightedChildren(children)}</h2>,
+              h3: ({ children }) => <h3>{renderHighlightedChildren(children)}</h3>,
+              h4: ({ children }) => <h4>{renderHighlightedChildren(children)}</h4>,
+              h5: ({ children }) => <h5>{renderHighlightedChildren(children)}</h5>,
+              h6: ({ children }) => <h6>{renderHighlightedChildren(children)}</h6>,
+            }}
+          >
+            {article?.content ?? ""}
+          </ReactMarkdown>
+        </TooltipProvider>
       </CardContent>
     </Card>
   )
