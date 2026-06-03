@@ -10,11 +10,12 @@ import { useRouter } from "next/navigation"
 export default function Home() {
   const [articleUrl, setArticleUrl] = React.useState("")
   const [isFetching, setIsFetching] = React.useState(false)
-  const { article, setArticle } = useArticleContext()
+  const { setArticle } = useArticleContext()
 
   const router = useRouter()
 
   const handleSubmit = async () => {
+    if (!articleUrl) return
     setIsFetching(true)
     const fetched = await fetchArticle(articleUrl)
     setIsFetching(false)
@@ -28,8 +29,8 @@ export default function Home() {
         <h1 className="text-4xl font-semibold tracking-tight">
           Article Prism
         </h1>
-        <p className="max-w-md text-base leading-7 text-muted-foreground">
-          Paste an article URL to pull out the key ideas, break it down, and compare with other perspectives.
+        <p className="text-base leading-7 text-muted-foreground">
+          Paste an article URL to fully understand it with detailed analysis, key vocabularies, and a deep dive into relevant articles.
         </p>
         <label
           htmlFor="article-url"

@@ -1,9 +1,12 @@
+"use server"
+
 import { Article } from "@/lib/types"
 import { AnalysisResult } from "./analyze-article"
 import { fetchArticle } from "./fetch-article"
 import { generate } from "@/lib/ai"
 
 export type DeepDiveResult = {
+  article_url: string
   summary: string
   relationship: "agrees" | "disagrees" | "reframes" | "provides_context"
   relationship_explanation: string
@@ -58,6 +61,6 @@ export async function deepDiveArticle(article: Article, analysisResult: Analysis
     .replace("{RELEVANT_CONTENT}", targetArticleFull.content)
   const completion = await generate(prompt)
   const cleaned = completion.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
-  const result = JSON.parse(cleaned) as DeepDiveResult
+  const result = { ...JSON.parse(cleaned), url: targetArticle.url } as DeepDiveResult
   return result
 }

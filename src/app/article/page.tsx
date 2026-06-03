@@ -65,14 +65,14 @@ export default function ArticlePage() {
     setDeepDive(null)
     setDeepDiveLoading(true)
     const result = await deepDiveArticle(article!, analysisResult!, targetArticle)
-    setDeepDive(result)
+    if (result.article_url === activeArticle?.url) setDeepDive(result)
     setDeepDiveLoading(false)
   }
 
   const tabComponents: Record<string, React.ReactNode> = {
     "Original Article": <OriginalArticleTab vocabState={vocabState} setVocabState={setVocabState} vocabHighlights={vocabHighlights} setVocabHighlights={setVocabHighlights} />,
     "Analysis": <AnalysisTab analysisResult={analysisResult} highlights={analysisHighlights} isLoading={isAnalysisLoading} error={analysisError} vocabState={vocabState} setVocabState={setVocabState} vocabHighlights={vocabHighlights} setVocabHighlights={setVocabHighlights} />,
-    "Relevant Articles": <RelevantArticleTab relevantArticles={relevantArticles} isLoading={isRelevantArticlesLoading} error={relevantArticlesError} deepDive={deepDive} deepDiveLoading={deepDiveLoading} activeArticle={activeArticle} handleDeepDive={handleDeepDive} />
+    "Relevant Articles": <RelevantArticleTab relevantArticles={relevantArticles} isLoading={isRelevantArticlesLoading} error={relevantArticlesError} deepDive={deepDive} deepDiveLoading={deepDiveLoading} activeArticle={activeArticle} setActiveArticle={setActiveArticle} handleDeepDive={handleDeepDive} />
   }
 
   // for analysis tab
