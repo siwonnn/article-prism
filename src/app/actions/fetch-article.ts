@@ -13,7 +13,7 @@ function parseArticle(raw: string) {
   return { title, content }
 }
 
-export async function fetchArticle(articleUrl: string): Promise<Article> {
+export async function fetchArticle(articleUrl: string, maxContentLength?: number): Promise<Article> {
   const api_key = process.env.JINA_API_KEY
 
   const url = "https://r.jina.ai/" + articleUrl
@@ -37,9 +37,11 @@ export async function fetchArticle(articleUrl: string): Promise<Article> {
   })
 
   const parsed = parseArticle(data)
+  let content = parsed.content
+  if (maxContentLength) content.slice(0, maxContentLength)
   const article: Article = {
     title: parsed.title,
-    content: parsed.content,
+    content: content,
     url: articleUrl
   }
   return article

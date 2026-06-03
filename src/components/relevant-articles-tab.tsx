@@ -3,17 +3,27 @@
 import { Article } from "@/lib/types"
 import { Card, CardContent } from "@/components/ui/card"
 import { ExternalLink } from "lucide-react"
+import { Button } from "./ui/button"
+import { DeepDiveResult } from "@/app/actions/deep-dive"
 
 type RelevantArticlesTabProps = {
   relevantArticles: Article[],
   isLoading: boolean,
-  error: string | null
+  error: string | null,
+  deepDive: DeepDiveResult | null,
+  deepDiveLoading: boolean,
+  activeArticle: Article | null,
+  handleDeepDive: (article: Article) => void
 }
 
 export default function RelevantArticleTab({
   relevantArticles,
   isLoading,
-  error
+  error,
+  deepDive,
+  deepDiveLoading,
+  activeArticle,
+  handleDeepDive
 }: RelevantArticlesTabProps) {
   if (isLoading) {
     return (
@@ -26,7 +36,7 @@ export default function RelevantArticleTab({
       <div className="text-sm text-destructive">{error}</div>
     )
   }
-  
+
   if (relevantArticles.length === 0) {
     return (
       <div className="flex items-center justify-center py-16 text-muted-foreground text-sm">
@@ -58,6 +68,13 @@ export default function RelevantArticleTab({
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {article.explanation}
               </p>
+              <Button
+                variant="outline"
+                className="mt-1 w-fit rounded-full border-primary/30 bg-primary/5 px-4 text-xs font-semibold text-primary hover:bg-primary/10 hover:border-primary/50 transition-all"
+                onClick={() => handleDeepDive(article)}
+              >
+                Deep Dive
+              </Button>
             </div>
           </CardContent>
         </Card>

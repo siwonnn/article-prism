@@ -13,6 +13,7 @@ import { AnalysisResult, analyzeArticle } from "../actions/analyze-article"
 import { Article, UIHighlight } from "@/lib/types"
 import RelevantArticleTab from "@/components/relevant-articles-tab"
 import { searchRelevantArticles } from "../actions/relevant-articles"
+import { deepDiveArticle, DeepDiveResult } from "../actions/deep-dive"
 
 
 export default function ArticlePage() {
@@ -27,6 +28,10 @@ export default function ArticlePage() {
   const [relevantArticles, setRelevantArticles] = React.useState<Article[]>([])
   const [isRelevantArticlesLoading, setIsRelevantArticlesLoading] = React.useState(false)
   const [relevantArticlesError, setRelevantArticlesError] = React.useState<string | null>(null)
+  const [deepDive, setDeepDive] = React.useState<DeepDiveResult | null>(null)
+  const [deepDiveLoading, setDeepDiveLoading] = React.useState(false)
+  const [activeArticle, setActiveArticle] = React.useState<Article | null>(null)
+
   const analysisStartedForUrlRef = React.useRef<string | null>(null)
   const relevantSearchStartedForUrlRef = React.useRef<string | null>(null)
 
@@ -54,10 +59,20 @@ export default function ArticlePage() {
     return out
   }, [analysisResult])
   
+  // for relevant articles tab: deep dive
+  async function handleDeepDive(targetArticle: Article) {
+    setActiveArticle(targetArticle)
+    setDeepDive(null)
+    setDeepDiveLoading(true)
+    const result = await deepDiveArticle(article!, analysisResult!, targetArticle)
+    setDeepDive(result)
+    setDeepDiveLoading(false)
+  }
+
   const tabComponents: Record<string, React.ReactNode> = {
     "Original Article": <OriginalArticleTab vocabState={vocabState} setVocabState={setVocabState} vocabHighlights={vocabHighlights} setVocabHighlights={setVocabHighlights} />,
     "Analysis": <AnalysisTab analysisResult={analysisResult} highlights={analysisHighlights} isLoading={isAnalysisLoading} error={analysisError} vocabState={vocabState} setVocabState={setVocabState} vocabHighlights={vocabHighlights} setVocabHighlights={setVocabHighlights} />,
-    "Relevant Articles": <RelevantArticleTab relevantArticles={relevantArticles} isLoading={isRelevantArticlesLoading} error={relevantArticlesError} />
+    "Relevant Articles": <RelevantArticleTab relevantArticles={relevantArticles} isLoading={isRelevantArticlesLoading} error={relevantArticlesError} deepDive={deepDive} deepDiveLoading={deepDiveLoading} activeArticle={activeArticle} handleDeepDive={handleDeepDive} />
   }
 
   // for analysis tab
