@@ -97,7 +97,6 @@ Article to analyze:
 `
 
 export async function analyzeArticle(article: Article): Promise<AnalysisResult> {
-  console.log('got into analyze article')
   const prompt = ANALYSIS_PROMPT.replace("{ARTICLE_CONTENT}", article.content)
   const completion = await generate(prompt)
   const cleaned = completion.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()

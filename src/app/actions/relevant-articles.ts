@@ -12,14 +12,6 @@ type QueryResult = {
   historical_context: string[]
 }
 
-export type RelevantArticles = {
-  critique: Article[]
-  different_cause: Article[]
-  different_lens: Article[]
-  primary_sources: Article[]
-  historical_context: Article[]
-}
-
 const SEARCH_QUERY_PROMPT = `
 You are helping a reader find articles that will give them a richer, more critical understanding of the article below.
 Generate search queries for each category. Each query should be specific enough to find real published articles - written the way a journalist or researcher would search, not like a chatbot.
@@ -63,28 +55,73 @@ Article:
 {ARTICLE_CONTENT}
 `
 
-export async function searchRelevantArticles(analysis: string, article: Article): Promise<RelevantArticles | string> {
-  console.log("got into search relevant articles")
+const FILTER_PROMPT = `
+You are filtering a list of articles for relevance to an original article's topic and argument.
+
+Original article analysis:
+{ANALYSIS_JSON}
+
+Original article:
+{ARTICLE_CONTENT}
+
+Candidate articles:
+{ARTICLES}
+
+For each article, judge if it is genuinely useful for a reader trying to understand different perspectives, critiques, or context around the original article's claims. Exclude duplicates, paywalled articles, or anything tangentially related.
+Rank the article's usefulness and return the output in order of rank - most useful to least useful.
+
+Return ONLY a JSON array, no preamble.
+
+[
+  {
+    "url": "the article url",
+    "relevant": true | false,
+    "explanation": "One sentence written for the reader explaining why this article is worth reading alongside the original - what perspective, critique, or context it adds"
+  }
+]
+`
+
+export async function searchRelevantArticles(analysis: string, article: Article): Promise<Article[]> {
   // generate search queries
   const queryPrompt = SEARCH_QUERY_PROMPT.replace("{ANALYSIS_JSON}", analysis).replace("{ARTICLE_CONTENT}", article.content)
   const queryCompletion = await generate(queryPrompt)
   const queryCleaned = queryCompletion.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
   const queryResult = JSON.parse(queryCleaned) as QueryResult
   const queries = Object.values(queryResult).flat()
-  console.log(queries)
   
   // search for articles
   const exa = new Exa(process.env.EXA_API_KEY)
   const searchResults = await Promise.all(
-    queries.map((query) => {
-      exa.search(query, {
+    queries.map(async (query) => {
+      const result = await exa.search(query, {
         numResults: 3,
         type: "neural",
         contents: {
           text: { maxCharacters: 1000 }
         }
       })
+      return result.results
     })
   )
-  return JSON.stringify(searchResults, null, 2)
+  
+  // filter relevant articles
+  const articles = searchResults.flat().map((a) => ({
+    url: a.url,
+    title: a.title,
+    content: a.text
+  } as Article))
+  const filterPrompt = FILTER_PROMPT
+    .replace("{ANALYSIS_JSON}", analysis)
+    .replace("{ARTICLE_CONTENT}", article.content)
+    .replace("{ARTICLES}", JSON.stringify(articles))
+  const filterCompletion = await generate(filterPrompt)
+  const filterCleaned = filterCompletion.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
+  const judgments = JSON.parse(filterCleaned) as { url: string; relevant: boolean; explanation: string }[]
+  const judgmentMap = new Map(
+    judgments.filter((j) => j.relevant).map((j) => [j.url, j.explanation])
+  )
+  const relevantArticles = articles
+    .filter((a) => judgmentMap.has(a.url))
+    .map((a) => ({ ...a, explanation: judgmentMap.get(a.url) }))
+  return relevantArticles
 }

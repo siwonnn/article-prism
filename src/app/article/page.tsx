@@ -10,9 +10,9 @@ import { useArticleContext } from "@/components/article-context"
 import OriginalArticleTab from "@/components/original-article-tab"
 import AnalysisTab from "@/components/analysis-tab"
 import { AnalysisResult, analyzeArticle } from "../actions/analyze-article"
-import { UIHighlight } from "@/lib/types"
+import { Article, UIHighlight } from "@/lib/types"
 import RelevantArticleTab from "@/components/relevant-articles-tab"
-import { RelevantArticles, searchRelevantArticles } from "../actions/relevant-articles"
+import { searchRelevantArticles } from "../actions/relevant-articles"
 
 
 export default function ArticlePage() {
@@ -24,7 +24,7 @@ export default function ArticlePage() {
   const [vocabState, setVocabState] = React.useState<"none" | "loading" | "shown" | "hidden">("none")
   const [vocabHighlights, setVocabHighlights] = React.useState<UIHighlight[]>([])
 
-  const [relevantArticles, setRelevantArticles] = React.useState<RelevantArticles | null>(null)
+  const [relevantArticles, setRelevantArticles] = React.useState<Article[]>([])
   const [isRelevantArticlesLoading, setIsRelevantArticlesLoading] = React.useState(false)
   const [relevantArticlesError, setRelevantArticlesError] = React.useState<string | null>(null)
   const analysisStartedForUrlRef = React.useRef<string | null>(null)
@@ -122,11 +122,7 @@ export default function ArticlePage() {
 
       try {
         const result = await searchRelevantArticles(JSON.stringify(analysisResult, null, 2), article)
-        if (typeof result !== "string") {
-          setRelevantArticles(result)
-        } else {
-          setRelevantArticlesError(result)
-        }
+        setRelevantArticles(result)
       } catch (caughtError) {
         setRelevantArticlesError(
           caughtError instanceof Error

@@ -1,10 +1,10 @@
 "use client"
 
+import { Article } from "@/lib/types"
 import * as React from "react"
-import { type RelevantArticles } from "@/app/actions/relevant-articles"
 
 type RelevantArticlesTabProps = {
-  relevantArticles: RelevantArticles | null,
+  relevantArticles: Article[],
   isLoading: boolean,
   error: string | null
 }
@@ -17,8 +17,7 @@ export default function RelevantArticleTab({
 
   return (
     <>
-      asdf
-      {isLoading}
+      {relevantArticles}
       {error}
     </>
   )
