@@ -7,4 +7,5 @@ export type Article = {
 export type UIHighlight = {
   text: string
   colorClass: string
+  explanation?: string
 }

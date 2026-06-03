@@ -4,19 +4,33 @@ import * as React from "react"
 import { useArticleContext } from "@/components/article-context"
 import ReactMarkdown from "react-markdown"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { type UIHighlight } from "@/lib/types"
+import { generateVocabHelp } from "@/app/actions/vocab-help"
 
-export default function OriginalArticleTab(props: {
+type OriginalArticleTabProps = {
   highlights?: UIHighlight[]
-}) {
-  const { article } = useArticleContext()
-  const highlights = props.highlights ?? []
+  vocabState: "none" | "loading" | "shown" | "hidden"
+  setVocabState: React.Dispatch<React.SetStateAction<"none" | "loading" | "shown" | "hidden">>
+  vocabHighlights: UIHighlight[]
+  setVocabHighlights: React.Dispatch<React.SetStateAction<UIHighlight[]>>
+}
 
-  function renderTextWithHighlights(text: string) {
-    if (!highlights.length) return text
+export default function OriginalArticleTab({
+  highlights = [],
+  vocabState,
+  setVocabState,
+  vocabHighlights,
+  setVocabHighlights,
+}: OriginalArticleTabProps) {
+  const { article } = useArticleContext()
+  const propHighlights = highlights ?? []
+
+  function renderTextWithHighlights(text: string, renderHighlights: UIHighlight[]) {
+    if (!renderHighlights.length) return text
 
     const matches: { start: number; end: number; hl: UIHighlight }[] = []
-    for (const hl of highlights) {
+    for (const hl of renderHighlights) {
       let pos = text.indexOf(hl.text)
       while (pos !== -1) {
         matches.push({ start: pos, end: pos + hl.text.length, hl })
@@ -29,7 +43,7 @@ export default function OriginalArticleTab(props: {
 
     const parts: React.ReactNode[] = []
     let cursor = 0
-    matches.forEach((m, i) => {
+    matches.forEach((m) => {
       if (m.start < cursor) return
       if (m.start > cursor) {
         parts.push(text.slice(cursor, m.start))
@@ -51,17 +65,50 @@ export default function OriginalArticleTab(props: {
   function renderHighlightedChildren(children: React.ReactNode): React.ReactNode {
     return React.Children.map(children, (child) => {
       if (typeof child === "string") {
-        return renderTextWithHighlights(child)
+        // always render propHighlights, and vocabHighlights only when vocabState is "shown"
+        let renderHighlights: UIHighlight[] = propHighlights
+        if (vocabState === "shown") renderHighlights = renderHighlights.concat(vocabHighlights)
+        return renderTextWithHighlights(child, renderHighlights)
       }
       return child
     })
   }
 
+  async function vocabClicked() {
+    if (vocabState === "none") { // load vocabulary help
+      setVocabState("loading")
+      const vocabHelp = await generateVocabHelp(article?.content ?? "")
+      setVocabHighlights(vocabHelp)
+      setVocabState("shown")
+    } else if (vocabState === "shown") { // toggle
+      setVocabState("hidden")
+    } else if (vocabState === "hidden") { 
+      setVocabState("shown")
+    }
+  }
+
   return (
     <Card className="border-dashed bg-muted/30 p-6">
       <CardHeader>
-        <CardTitle className="text-xs font-medium uppercase text-muted-foreground">
-          original article
+        <CardTitle className="flex text-xs font-medium uppercase text-muted-foreground">
+          <div>original article</div>
+          <Button
+            className={`ml-auto gap-2 transition-all ${
+              vocabState === "shown"
+                ? "bg-primary text-primary-foreground"
+                : vocabState === "hidden"
+                  ? "bg-muted text-muted-foreground"
+                  : "bg-background"
+            }`}
+            variant="outline"
+            onClick={vocabClicked}
+            disabled={vocabState === "loading"}>
+            {vocabState === "loading" ? (
+              <div>Loading...</div>
+            ) : (
+              <div>Vocabulary Help</div>
+            )}
+          </Button>
         </CardTitle>
       </CardHeader>
       <CardContent className="whitespace-pre-wrap leading-6 font-serif font-medium text-[17px]">

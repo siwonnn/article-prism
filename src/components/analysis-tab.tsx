@@ -8,10 +8,25 @@ import { Card, CardTitle, CardContent, CardHeader } from "@/components/ui/card"
 import { type UIHighlight } from "@/lib/types"
 import { ScrollArea } from "./ui/scroll-area"
 
-export default function AnalysisTab() {
+type AnalysisTabProps = {
+  analysisResult: AnalysisResult | null
+  setAnalysisResult: React.Dispatch<React.SetStateAction<AnalysisResult | null>>
+  vocabState: "none" | "loading" | "shown" | "hidden"
+  setVocabState: React.Dispatch<React.SetStateAction<"none" | "loading" | "shown" | "hidden">>
+  vocabHighlights: UIHighlight[]
+  setVocabHighlights: React.Dispatch<React.SetStateAction<UIHighlight[]>>
+}
+
+export default function AnalysisTab({
+  analysisResult,
+  setAnalysisResult,
+  vocabState,
+  setVocabState,
+  vocabHighlights,
+  setVocabHighlights
+}: AnalysisTabProps) {
   const { article } = useArticleContext()
   const [isLoading, setIsLoading] = React.useState(false)
-  const [analysisResult, setAnalysisResult] = React.useState<AnalysisResult | null>(null)
   const [error, setError] = React.useState<string | null>(null)
 
   React.useEffect(() => {
@@ -23,6 +38,7 @@ export default function AnalysisTab() {
     }
 
     const runAnalysis = async () => {
+      if (analysisResult !== null) return
       setIsLoading(true)
       setError(null)
       setAnalysisResult(null)
@@ -40,7 +56,7 @@ export default function AnalysisTab() {
         setIsLoading(false)
       }
     }
-
+    
     void runAnalysis()
   }, [article?.url, article?.content])
 
@@ -71,7 +87,7 @@ export default function AnalysisTab() {
   return (
     <div className="h-[calc(100vh-12rem)] grid grid-cols-1 md:grid-cols-2 gap-6">
       <ScrollArea className="h-full min-h-0">
-        <OriginalArticleTab highlights={highlights} />
+        <OriginalArticleTab highlights={highlights} vocabState={vocabState} setVocabState={setVocabState} vocabHighlights={vocabHighlights} setVocabHighlights={setVocabHighlights} />
       </ScrollArea>
 
       <ScrollArea className="h-full min-h-0">

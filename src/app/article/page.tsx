@@ -1,22 +1,28 @@
 "use client"
 
+import * as React from "react"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useArticleContext } from "@/components/article-context"
 import OriginalArticleTab from "@/components/original-article-tab"
 import AnalysisTab from "@/components/analysis-tab"
+import { AnalysisResult } from "../actions/analyze-article"
+import { UIHighlight } from "@/lib/types"
 
-const tabComponents: Record<string, React.ReactNode> = {
-  "Original Article": <OriginalArticleTab />,
-  "Analysis": <AnalysisTab />
-}
 
 export default function ArticlePage() {
   const { article } = useArticleContext()
+  const [analysisResult, setAnalysisResult] = React.useState<AnalysisResult | null>(null)
+  const [vocabState, setVocabState] = React.useState<"none" | "loading" | "shown" | "hidden">("none")
+  const [vocabHighlights, setVocabHighlights] = React.useState<UIHighlight[]>([])
+  
+  const tabComponents: Record<string, React.ReactNode> = {
+    "Original Article": <OriginalArticleTab vocabState={vocabState} setVocabState={setVocabState} vocabHighlights={vocabHighlights} setVocabHighlights={setVocabHighlights} />,
+    "Analysis": <AnalysisTab analysisResult={analysisResult} setAnalysisResult={setAnalysisResult} vocabState={vocabState} setVocabState={setVocabState} vocabHighlights={vocabHighlights} setVocabHighlights={setVocabHighlights} />
+  }
 
   return (
     <main className="min-h-screen bg-background px-6 py-8 text-foreground sm:px-8 lg:px-10">
