@@ -1,16 +1,17 @@
 "use client"
 
 import * as React from "react"
-import { useArticleContext } from "@/components/article-context"
-import { type AnalysisResult, analyzeArticle } from "@/app/actions/analyze-article"
+import { type AnalysisResult } from "@/app/actions/analyze-article"
 import OriginalArticleTab from "./original-article-tab"
 import { Card, CardTitle, CardContent, CardHeader } from "@/components/ui/card"
 import { type UIHighlight } from "@/lib/types"
-import { ScrollArea } from "./ui/scroll-area"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 type AnalysisTabProps = {
   analysisResult: AnalysisResult | null
-  setAnalysisResult: React.Dispatch<React.SetStateAction<AnalysisResult | null>>
+  highlights: UIHighlight[]
+  isLoading: boolean
+  error: string | null
   vocabState: "none" | "loading" | "shown" | "hidden"
   setVocabState: React.Dispatch<React.SetStateAction<"none" | "loading" | "shown" | "hidden">>
   vocabHighlights: UIHighlight[]
@@ -19,71 +20,14 @@ type AnalysisTabProps = {
 
 export default function AnalysisTab({
   analysisResult,
-  setAnalysisResult,
+  highlights,
+  isLoading,
+  error,
   vocabState,
   setVocabState,
   vocabHighlights,
   setVocabHighlights
 }: AnalysisTabProps) {
-  const { article } = useArticleContext()
-  const [isLoading, setIsLoading] = React.useState(false)
-  const [error, setError] = React.useState<string | null>(null)
-
-  React.useEffect(() => {
-    if (!article) {
-      setIsLoading(false)
-      setAnalysisResult(null)
-      setError(null)
-      return
-    }
-
-    const runAnalysis = async () => {
-      if (analysisResult !== null) return
-      setIsLoading(true)
-      setError(null)
-      setAnalysisResult(null)
-
-      try {
-        const analysis = await analyzeArticle(article)
-        setAnalysisResult(analysis)
-      } catch (caughtError) {
-        setError(
-          caughtError instanceof Error
-            ? caughtError.message
-            : "Failed to analyze article"
-        )
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    
-    void runAnalysis()
-  }, [article?.url, article?.content])
-
-  const highlights = React.useMemo((): UIHighlight[] => {
-    const out: UIHighlight[] = []
-
-    analysisResult?.evidences.forEach((evidence) => {
-      evidence.excerpts.forEach((text) => {
-        out.push({
-          text: text,
-          colorClass: "bg-amber-200/60 ring-amber-300"
-        })
-      })
-    })
-
-    analysisResult?.rhetorical_moves.forEach((move) => {
-      move.excerpts.forEach((text) => {
-        out.push({
-          text: text,
-          colorClass: "bg-violet-200/60 ring-violet-300"
-        })
-      })
-    })
-
-    return out
-  }, [analysisResult])
-
   return (
     <div className="h-[calc(100vh-12rem)] grid grid-cols-1 md:grid-cols-2 gap-6">
       <ScrollArea className="h-full min-h-0">
