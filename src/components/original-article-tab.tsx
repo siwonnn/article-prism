@@ -49,21 +49,25 @@ export default function OriginalArticleTab({
       if (m.start > cursor) {
         parts.push(text.slice(cursor, m.start))
       }
+
+      const highlighted = (
+        <mark
+          className={`${m.hl.colorClass} rounded px-1 ring-1 ring-inset`}
+        >
+          {text.slice(m.start, m.end)}
+        </mark>
+      )
+
       parts.push(
         <span key={`${m.start}-${m.end}`} className="relative inline-block group">
-          <Tooltip>
-            <TooltipTrigger>
-              <mark
-                className={`${m.hl.colorClass} rounded px-1 ring-1 ring-inset`}
-              >
-                {text.slice(m.start, m.end)}
-              </mark>
-            </TooltipTrigger>
-
-            {m.hl.explanation && (
-              <TooltipContent>{m.hl.explanation}</TooltipContent>
-            )}
-          </Tooltip>
+          {m.hl.explanation ? (
+            <Tooltip>
+            <TooltipTrigger>{highlighted}</TooltipTrigger>
+            <TooltipContent>{m.hl.explanation}</TooltipContent>
+            </Tooltip>
+          ) : (
+            highlighted
+          )}
         </span>
       )
       cursor = m.end

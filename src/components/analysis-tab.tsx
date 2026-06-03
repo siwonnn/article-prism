@@ -37,7 +37,7 @@ export default function AnalysisTab({
       <ScrollArea className="h-full min-h-0">
         <div className="flex flex-col gap-4">
           {isLoading ? (
-            <div className="text-muted-foreground">Loading analysis…</div>
+            <div className="flex items-center justify-center py-16 text-muted-foreground text-sm">Loading analysis…</div>
           ) : error ? (
             <div className="text-sm text-destructive">{error}</div>
           ) : analysisResult ? (

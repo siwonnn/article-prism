@@ -107,23 +107,25 @@ export default function ArticlePage() {
     }
 
     if (!analysisResult) {
-      setIsRelevantArticlesLoading(false)
+      setIsRelevantArticlesLoading(true)
       setRelevantArticlesError("Waiting for article analysis to search relevant articles")
       return
     }
 
     const runSearch = async () => {
-      if (relevantArticles !== null) return
+      if (relevantArticles.length > 0) return
       if (relevantSearchStartedForUrlRef.current === article.url) return
 
       relevantSearchStartedForUrlRef.current = article.url
       setIsRelevantArticlesLoading(true)
-      setRelevantArticlesError(null)
+      setRelevantArticlesError("Loading relevant articles...")
 
+      let isError = false
       try {
         const result = await searchRelevantArticles(JSON.stringify(analysisResult, null, 2), article)
         setRelevantArticles(result)
       } catch (caughtError) {
+        isError = true
         setRelevantArticlesError(
           caughtError instanceof Error
            ? caughtError.message
@@ -131,6 +133,7 @@ export default function ArticlePage() {
         )
       } finally {
         setIsRelevantArticlesLoading(false)
+        if (!isError) setRelevantArticlesError(null)
         relevantSearchStartedForUrlRef.current = null
       }
     }
