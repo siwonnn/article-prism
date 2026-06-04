@@ -19,7 +19,7 @@ Try it out yourself with [this article](https://www.nytimes.com/2026/01/10/opini
 - Next.js 16
 - Typescript
 - Tailwind CSS, shadcn/ui
-- OpenRouter API
+- Gemini API
 - Jina Reader API
 - exa-js
 - react-markdown
